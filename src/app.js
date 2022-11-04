@@ -11,12 +11,23 @@ const tweets = [];
 
 server.post("/sign-up", (req, res) => {
     user.push(req.body);
-    res.send("OK")
+    res.send("OK");
 })
 
 server.post("/tweets", (req, res) => {
-    tweets.push(req.body);
-    res.send("OK")
+    
+    const userIcon = user.find(userInfo => userInfo.username === req.body.username).avatar;
+    
+    tweets.push({
+        tweet: req.body.tweet,
+        username: req.body.username,
+        avatar: userIcon
+    });
+    res.send("OK");
+})
+
+server.get("/tweets", (req,res) => {
+    res.send(tweets);
 })
 
 server.listen(5000);
