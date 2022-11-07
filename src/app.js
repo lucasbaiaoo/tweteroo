@@ -10,11 +10,22 @@ const user = [];
 const tweets = [];
 
 server.post("/sign-up", (req, res) => {
+
+    if(!req.body.username || !req.body.avatar){
+        res.status(400).send("Todos os campos são obrigatórios!");
+        return
+    }
+
     user.push(req.body);
     res.send("OK");
 })
 
 server.post("/tweets", (req, res) => {
+
+    if(!req.body.username || !req.body.tweet){
+        res.status(400).send("Todos os campos são obrigatórios!");
+        return
+    }
     
     const userIcon = user.find(userInfo => userInfo.username === req.body.username).avatar;
     
