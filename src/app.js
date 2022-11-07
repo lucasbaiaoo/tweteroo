@@ -22,27 +22,45 @@ server.post("/sign-up", (req, res) => {
 
 server.post("/tweets", (req, res) => {
 
-    if(!req.body.username || !req.body.tweet){
+    const userName = req.headers.user;
+
+    if(!userName|| !req.body.tweet){
         res.status(400).send("Todos os campos são obrigatórios!");
         return
     }
     
-    const userIcon = user.find(userInfo => userInfo.username === req.body.username).avatar;
+    const userIcon = user.find(userInfo => userInfo.username === userName).avatar;
     
     tweets.push({
         tweet: req.body.tweet,
-        username: req.body.username,
+        username: userName,
         avatar: userIcon
     });
     res.status(201).send("OK");
 })
 
 server.get("/tweets", (req,res) => {
-    if(tweets.length <= 10){
-        res.send([...tweets].reverse())
+
+        if(tweets.length <= 10){
+            res.send([...tweets].reverse())
+        } else{
+            const orderedTweets = tweets.slice(- 10).reverse();
+            res.send(orderedTweets);
+        }
+})
+
+server.get("/tweets/:username", (req,res) => {
+
+    const username = req.params.username 
+    const userTweets = tweets.filter(tweetsInfo => tweetsInfo.username === username)
+
+    console.log(userTweets);
+
+    if(userTweets.length <= 10){
+        res.send([...userTweets].reverse())
     } else{
-        const orderedTweets = tweets.slice(- 10).reverse();
-        res.send(orderedTweets);
+        const orderedUserTweets = userTweets.slice(- 10).reverse();
+        res.send(orderedUserTweets);
     }
 })
 
