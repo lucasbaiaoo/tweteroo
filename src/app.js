@@ -27,7 +27,12 @@ server.post("/tweets", (req, res) => {
 })
 
 server.get("/tweets", (req,res) => {
-    res.send(tweets);
+    if(tweets.length <= 10){
+        res.send([...tweets].reverse())
+    } else{
+        const orderedTweets = tweets.slice(- 10).reverse();
+        res.send(orderedTweets);
+    }
 })
 
 server.listen(5000);
