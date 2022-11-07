@@ -10,58 +10,65 @@ const user = [];
 const tweets = [];
 
 server.post("/sign-up", (req, res) => {
+  if (!req.body.username || !req.body.avatar) {
+    res.status(400).send("Todos os campos são obrigatórios!");
+    return;
+  }
 
-    if(!req.body.username || !req.body.avatar){
-        res.status(400).send("Todos os campos são obrigatórios!");
-        return
-    }
-
-    user.push(req.body);
-    res.status(201).send("OK");
-})
+  user.push(req.body);
+  res.status(201).send("OK");
+});
 
 server.post("/tweets", (req, res) => {
+  const userName = req.headers.user;
 
-    const userName = req.headers.user;
+  if (!userName || !req.body.tweet) {
+    res.status(400).send("Todos os campos são obrigatórios!");
+    return;
+  }
 
-    if(!userName|| !req.body.tweet){
-        res.status(400).send("Todos os campos são obrigatórios!");
-        return
-    }
-    
-    const userIcon = user.find(userInfo => userInfo.username === userName).avatar;
-    
-    tweets.push({
-        tweet: req.body.tweet,
-        username: userName,
-        avatar: userIcon
-    });
-    res.status(201).send("OK");
-})
+  const userIcon = user.find(
+    (userInfo) => userInfo.username === userName
+  ).avatar;
 
-server.get("/tweets", (req,res) => {
+  tweets.push({
+    tweet: req.body.tweet,
+    username: userName,
+    avatar: userIcon,
+  });
+  res.status(201).send("OK");
+});
 
-        if(tweets.length <= 10){
-            res.send([...tweets].reverse())
-        } else{
-            const orderedTweets = tweets.slice(- 10).reverse();
-            res.send(orderedTweets);
-        }
-})
+server.get("/tweets", (req, res) => {
+  const page = parseInt(req.query.page);
 
-server.get("/tweets/:username", (req,res) => {
+  if (!page && page < 1) {
+    res.status(400).send("Informe uma página válida!");
+    return;
+  }
 
-    const username = req.params.username 
-    const userTweets = tweets.filter(tweetsInfo => tweetsInfo.username === username)
+  if (page === 1) {
+    res.send(tweets.slice(-10).reverse());
+    return;
+  }
 
-    console.log(userTweets);
+  res.send(tweets.slice(-10 * page, -10 * page + 10).reverse());
+});
 
-    if(userTweets.length <= 10){
-        res.send([...userTweets].reverse())
-    } else{
-        const orderedUserTweets = userTweets.slice(- 10).reverse();
-        res.send(orderedUserTweets);
-    }
-})
+server.get("/tweets/:username", (req, res) => {
+  const username = req.params.username;
+  const userTweets = tweets.filter(
+    (tweetsInfo) => tweetsInfo.username === username
+  );
+
+  console.log(userTweets);
+
+  if (userTweets.length <= 10) {
+    res.send([...userTweets].reverse());
+  } else {
+    const orderedUserTweets = userTweets.slice(-10).reverse();
+    res.send(orderedUserTweets);
+  }
+});
 
 server.listen(5000);
