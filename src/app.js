@@ -61,8 +61,6 @@ server.get("/tweets/:username", (req, res) => {
     (tweetsInfo) => tweetsInfo.username === username
   );
 
-  console.log(userTweets);
-
   if (userTweets.length <= 10) {
     res.send([...userTweets].reverse());
   } else {
