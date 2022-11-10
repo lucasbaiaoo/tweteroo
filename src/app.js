@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 
 const server = express();
+
 server.use(cors());
 server.use(express.json());
 
 const user = [];
-
 const tweets = [];
 
 server.post("/sign-up", (req, res) => {
@@ -36,6 +36,7 @@ server.post("/tweets", (req, res) => {
     username: userName,
     avatar: userIcon,
   });
+
   res.status(201).send("OK");
 });
 
@@ -63,10 +64,11 @@ server.get("/tweets/:username", (req, res) => {
 
   if (userTweets.length <= 10) {
     res.send([...userTweets].reverse());
-  } else {
-    const orderedUserTweets = userTweets.slice(-10).reverse();
-    res.send(orderedUserTweets);
+    return;
   }
+
+  const orderedUserTweets = userTweets.slice(-10).reverse();
+  res.send(orderedUserTweets);
 });
 
 server.listen(5000);
